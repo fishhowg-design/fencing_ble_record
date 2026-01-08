@@ -69,19 +69,6 @@
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex23-clz">
 		<button class="diygw-col-24 btn13-clz diygw-btn-default">START</button>
 	</view>
-	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex26-clz">
-		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex27-clz">
-			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex28-clz">
-				<text class="flex f_red_ico diygw-col-24 diy-icon-game"></text>
-			</view>
-			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex29-clz"> </view>
-		</view>
-		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex30-clz">
-			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex31-clz">
-				<text class="flex f_green_ico diygw-col-24 f_green_ico-clz diy-icon-game"></text>
-			</view>
-			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex32-clz"> </view>
-		</view>
-	</view>
+
 	<view class="clearfix"></view>
 </view>

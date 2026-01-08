@@ -1,73 +1,82 @@
 <view class="container container343176">
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex-clz">
-		<text class="diygw-col-3 text3-clz"> 1 </text>
-		<text class="diygw-col-3 text7-clz"> 1 </text>
-		<text class="diygw-col-3 text6-clz"> 1 </text>
+		<text class="diygw-col-3 text3-clz"> {{redScore}} </text>
+		<text class="diygw-col-3 text7-clz"> {{blueScore}} </text>
+		<text class="diygw-col-3 text6-clz"> {{gamePhase}} </text>
 		<text class="diygw-col-3 text4-clz"> DUEL </text>
-		<text class="diygw-col-3 text5-clz"> 1 </text>
+		<text class="diygw-col-3 text5-clz"> {{gameMode === '10_points' ? '10PTS' : '3MIN'}} </text>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex15-clz">
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex16-clz">
-			<text class="diygw-col-24 text1-clz"> 0 </text>
+			<text class="diygw-col-24 text1-clz"> {{redScore}} </text>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex17-clz">
-			<text class="diygw-col-24 text2-clz"> 0 </text>
+			<text class="diygw-col-24 text2-clz"> {{blueScore}} </text>
 		</view>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex3-clz">
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex4-clz">
 			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex6-clz">
-				<button class="diygw-col-24 red_score_add-clz diygw-btn-default">+</button>
+				<button class="diygw-col-24 red_score_add-clz diygw-btn-default" bindtap="redScoreAdd">+</button>
 			</view>
 			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex7-clz">
-				<button class="diygw-col-24 red_score_lose-clz diygw-btn-default">-</button>
+				<button class="diygw-col-24 red_score_lose-clz diygw-btn-default" bindtap="redScoreLose">-</button>
 			</view>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex5-clz">
 			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex8-clz">
-				<button class="diygw-col-24 btn3-clz diygw-btn-default">-</button>
+				<button class="diygw-col-24 btn3-clz diygw-btn-default" bindtap="blueScoreLose">-</button>
 			</view>
 			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex9-clz">
-				<button class="diygw-col-24 btn2-clz diygw-btn-default">+</button>
+				<button class="diygw-col-24 btn2-clz diygw-btn-default" bindtap="blueScoreAdd">+</button>
 			</view>
 		</view>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex10-clz">
-		<text class="diygw-col-24 text-clz"> 03:00 </text>
+		<text class="diygw-col-24 text-clz"> {{timeLeftDisplay}} </text>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex11-clz">
-		<button class="diygw-col-24 btn4-clz diygw-btn-default">10 POINTS GAME</button>
+		<button class="diygw-col-24 btn4-clz diygw-btn-default" bindtap="toggleGameMode">10 POINTS GAME</button>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex12-clz">
-		<button class="diygw-col-24 btn5-clz diygw-btn-default">P2/2</button>
+		<button class="diygw-col-24 btn5-clz diygw-btn-default" bindtap="toggleGamePhase">P2/2</button>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex1-clz">
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex2-clz">
-			<button class="diygw-col-24 btn7-clz diygw-btn-default">YELLOW CARD</button>
+			<button class="diygw-col-24 btn7-clz diygw-btn-default" data-side="red" bindtap="yellowCard">YELLOW CARD</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex13-clz">
-			<button class="diygw-col-23 btn8-clz diygw-btn-default">RED CARD</button>
+			<button class="diygw-col-23 btn8-clz diygw-btn-default" data-side="blue" bindtap="yellowCard">YELLOW CARD</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
-			<button class="diygw-col-24 btn6-clz diygw-btn-default">BLACK CARD</button>
+			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="red" bindtap="redCard">RED CARD</button>
+		</view>
+		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
+			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="blue" bindtap="redCard">RED CARD</button>
+		</view>
+		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
+			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="red" bindtap="blackCard">BLACK CARD</button>
+		</view>
+		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
+			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="blue" bindtap="blackCard">BLACK CARD</button>
 		</view>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex18-clz">
-		<button class="diygw-col-24 btn9-clz diygw-btn-default">RESET GAME</button>
+		<button class="diygw-col-24 btn9-clz diygw-btn-default" bindtap="resetGame">RESET GAME</button>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex19-clz">
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex20-clz">
-			<button class="diygw-col-24 btn12-clz diygw-btn-default">5 MIN MED</button>
+			<button class="diygw-col-24 btn12-clz diygw-btn-default" bindtap="medicalPause">5 MIN MED</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex21-clz">
-			<button class="diygw-col-24 btn10-clz diygw-btn-default">1 MIN REST</button>
+			<button class="diygw-col-24 btn10-clz diygw-btn-default" bindtap="restTime">1 MIN REST</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex22-clz">
-			<button class="diygw-col-24 btn11-clz diygw-btn-default">PRIO</button>
+			<button class="diygw-col-24 btn11-clz diygw-btn-default" bindtap="togglePriority">PRIO</button>
 		</view>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex23-clz">
-		<button class="diygw-col-24 btn13-clz diygw-btn-default">START</button>
+		<button class="diygw-col-24 btn13-clz diygw-btn-default" bindtap="toggleTimer">START</button>
 	</view>
 
 	<view class="clearfix"></view>

@@ -1,0 +1,9 @@
+{
+	"pages": ["pages/index", "pages/webview"],
+
+	"window": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "fencing_code",
+		"navigationBarBackgroundColor": "#07c160"
+	}
+}

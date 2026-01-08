@@ -299,6 +299,134 @@ Page({
     });
   },
 
+  // 弹出红方图标确认窗口
+  showRedIconModal() {
+    wx.showModal({
+      title: '确认操作',
+      content: '您点击了红方图标，将搜索蓝牙设备fencingj_red',
+      confirmText: '确认',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          console.log('用户点击了确认');
+          this.connectToRedDevice();
+        } else if (res.cancel) {
+          console.log('用户点击了取消');
+        }
+      }
+    });
+  },
+
+  // 弹出绿方图标确认窗口
+  showGreenIconModal() {
+    wx.showModal({
+      title: '确认操作',
+      content: '您点击了绿方图标，将搜索蓝牙设备fencing_green',
+      confirmText: '确认',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          console.log('用户点击了确认');
+          this.connectToGreenDevice();
+        } else if (res.cancel) {
+          console.log('用户点击了取消');
+        }
+      }
+    });
+  },
+
+  // 连接到红方蓝牙设备
+  connectToRedDevice() {
+    this.startBluetoothDeviceSearch('fencingj_red', 'red');
+  },
+
+  // 连接到绿方蓝牙设备
+  connectToGreenDevice() {
+    this.startBluetoothDeviceSearch('fencing_green', 'green');
+  },
+  
+  // 开始蓝牙设备搜索
+  startBluetoothDeviceSearch(deviceName, side) {
+    const thiz = this;
+    
+    // 初始化蓝牙模块
+    wx.openBluetoothAdapter({
+      success: function(res) {
+        console.log('蓝牙模块初始化成功', res);
+        
+        // 开始搜索蓝牙设备
+        wx.startBluetoothDevicesDiscovery({
+          success: function(res) {
+            console.log('开始搜索蓝牙设备');
+            
+            // 监听搜索到新设备的事件
+            wx.onBluetoothDeviceFound(function(res) {
+              const devices = res.devices;
+              for (let i = 0; i < devices.length; i++) {
+                const device = devices[i];
+                if (device.name === deviceName || device.localName === deviceName) {
+                  console.log(`找到设备 ${deviceName}:`, device);
+                  
+                  // 停止搜索
+                  wx.stopBluetoothDevicesDiscovery({
+                    complete: function() {
+                      console.log('停止搜索');
+                      
+                      // 连接设备
+                      wx.createBLEConnection({
+                        deviceId: device.deviceId,
+                        success: function(res) {
+                          console.log(`${deviceName} 连接成功`, res);
+                          
+                          // 更新图标颜色
+                          if (side === 'red') {
+                            thiz.setData({
+                              redDeviceConnected: true
+                            });
+                          } else if (side === 'green') {
+                            thiz.setData({
+                              greenDeviceConnected: true
+                            });
+                          }
+                          
+                          wx.showToast({
+                            title: `${deviceName} 连接成功`,
+                            icon: 'success'
+                          });
+                        },
+                        fail: function(err) {
+                          console.log(`${deviceName} 连接失败`, err);
+                          wx.showToast({
+                            title: `${deviceName} 连接失败`,
+                            icon: 'error'
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              }
+            });
+          },
+          fail: function(err) {
+            console.log('搜索蓝牙设备失败', err);
+            wx.showToast({
+              title: '搜索蓝牙设备失败',
+              icon: 'error'
+            });
+          }
+        });
+      },
+      fail: function(err) {
+        console.log('蓝牙模块初始化失败', err);
+        wx.showToast({
+          title: '蓝牙模块初始化失败',
+          icon: 'error'
+        });
+      }
+    });
+  },
+
   // setUser 自定义方法
   async setUserFunction(param) {
     let thiz = this.data;

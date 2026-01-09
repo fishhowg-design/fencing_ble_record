@@ -501,6 +501,14 @@ Page({
       
       console.log(`时间: ${time}, 颜色: ${color}, 分数: ${score}`);
       
+      // 显示解析结果弹窗
+      wx.showModal({
+        title: '击中信号',
+        content: `时间: ${time}\n颜色: ${color}\n分数: ${score}\n来自: ${side}方`,
+        showCancel: false,
+        confirmText: '确定'
+      });
+      
       // 添加到击中信号记录
       const newHitSignal = {
         time: time,

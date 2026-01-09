@@ -23,11 +23,7 @@ Page({
       yellow: 0,
       red: 0,
       black: 0
-    },
-    
-    // 蓝牙连接状态
-    redDeviceConnected: false,
-    greenDeviceConnected: false
+    }
   },
   
   onLoad(option) {
@@ -135,7 +131,7 @@ Page({
     }
   },
   
-  // 绿方加分
+  // 蓝方加分
   greenScoreAdd() {
     const newScore = this.data.greenScore + 1;
     this.setData({
@@ -152,7 +148,7 @@ Page({
     }
   },
   
-  // 绿方减分
+  // 蓝方减分
   greenScoreLose() {
     if (this.data.greenScore > 0) {
       this.setData({
@@ -238,7 +234,7 @@ Page({
       });
     }
   },
-  
+
   // 重置比赛
   resetGame() {
     this.pauseTimer();
@@ -307,7 +303,7 @@ Page({
   showRedIconModal() {
     wx.showModal({
       title: '确认操作',
-      content: '您点击了红方图标，将搜索蓝牙设备Fencing_Sword_Red',
+      content: '您点击了红方图标，将搜索蓝牙设备fencingj_red',
       confirmText: '确认',
       cancelText: '取消',
       success: (res) => {
@@ -331,10 +327,6 @@ Page({
       success: (res) => {
         if (res.confirm) {
           console.log('用户点击了确认');
-          // 直接切换颜色，不需要等待连接
-          this.setData({
-            greenDeviceConnected: !this.data.greenDeviceConnected
-          });
           this.connectToGreenDevice();
         } else if (res.cancel) {
           console.log('用户点击了取消');
@@ -345,7 +337,7 @@ Page({
 
   // 连接到红方蓝牙设备
   connectToRedDevice() {
-    this.startBluetoothDeviceSearch('Fencing_Sword_Red', 'red');
+    this.startBluetoothDeviceSearch('fencingj_red', 'red');
   },
 
   // 连接到绿方蓝牙设备

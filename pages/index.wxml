@@ -1,7 +1,7 @@
 <view class="container container343176">
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex-clz">
 		<text class="diygw-col-3 text3-clz"> {{redScore}} </text>
-		<text class="diygw-col-3 text7-clz"> {{blueScore}} </text>
+		<text class="diygw-col-3 text7-clz"> {{greenScore}} </text>
 		<text class="diygw-col-3 text6-clz"> {{gamePhase}} </text>
 		<text class="diygw-col-3 text4-clz"> DUEL </text>
 		<text class="diygw-col-3 text5-clz"> {{gameMode === '10_points' ? '10PTS' : '3MIN'}} </text>
@@ -11,7 +11,7 @@
 			<text class="diygw-col-24 text1-clz"> {{redScore}} </text>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex17-clz">
-			<text class="diygw-col-24 text2-clz"> {{blueScore}} </text>
+			<text class="diygw-col-24 text2-clz"> {{greenScore}} </text>
 		</view>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex3-clz">
@@ -25,10 +25,10 @@
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex5-clz">
 			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex8-clz">
-				<button class="diygw-col-24 btn3-clz diygw-btn-default" bindtap="blueScoreLose">-</button>
+				<button class="diygw-col-24 btn3-clz diygw-btn-default" bindtap="greenScoreLose">-</button>
 			</view>
 			<view class="flex flex-wrap diygw-col-24 flex-direction-column flex9-clz">
-				<button class="diygw-col-24 btn2-clz diygw-btn-default" bindtap="blueScoreAdd">+</button>
+				<button class="diygw-col-24 btn2-clz diygw-btn-default" bindtap="greenScoreAdd">+</button>
 			</view>
 		</view>
 	</view>
@@ -46,19 +46,19 @@
 			<button class="diygw-col-24 btn7-clz diygw-btn-default" data-side="red" bindtap="yellowCard">YELLOW CARD</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex13-clz">
-			<button class="diygw-col-23 btn8-clz diygw-btn-default" data-side="blue" bindtap="yellowCard">YELLOW CARD</button>
+			<button class="diygw-col-23 btn8-clz diygw-btn-default" data-side="green" bindtap="yellowCard">YELLOW CARD</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
 			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="red" bindtap="redCard">RED CARD</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
-			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="blue" bindtap="redCard">RED CARD</button>
+			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="green" bindtap="redCard">RED CARD</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
 			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="red" bindtap="blackCard">BLACK CARD</button>
 		</view>
 		<view class="flex flex-wrap diygw-col-24 flex-direction-column flex14-clz">
-			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="blue" bindtap="blackCard">BLACK CARD</button>
+			<button class="diygw-col-24 btn6-clz diygw-btn-default" data-side="green" bindtap="blackCard">BLACK CARD</button>
 		</view>
 	</view>
 	<view class="flex flex-wrap diygw-col-24 flex-direction-column flex18-clz">

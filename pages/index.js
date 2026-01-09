@@ -23,7 +23,14 @@ Page({
       yellow: 0,
       red: 0,
       black: 0
-    }
+    },
+    
+    // 蓝牙连接状态
+    redDeviceConnected: false,
+    greenDeviceConnected: false,
+    
+    // 击中信号记录
+    hitSignals: []
   },
   
   onLoad(option) {
@@ -372,10 +379,16 @@ Page({
                         thiz.setData({
                           redDeviceConnected: true
                         });
+                        
+                        // 连接成功后，初始化服务和特征值
+                        thiz.initBLEService(device.deviceId, side);
                       } else if (side === 'green') {
                         thiz.setData({
                           greenDeviceConnected: true
                         });
+                        
+                        // 连接成功后，初始化服务和特征值
+                        thiz.initBLEService(device.deviceId, side);
                       }
                       
                       wx.showToast({
@@ -407,6 +420,122 @@ Page({
     });
   },
 
+  // 初始化蓝牙服务和特征值
+  initBLEService(deviceId, side) {
+    const thiz = this;
+    const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+    const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+    
+    // 获取蓝牙设备的服务
+    wx.getBLEDeviceServices({
+      deviceId: deviceId,
+      success: function(res) {
+        console.log('获取服务成功', res);
+        
+        // 获取特征值
+        wx.getBLEDeviceCharacteristics({
+          deviceId: deviceId,
+          serviceId: SERVICE_UUID,
+          success: function(res) {
+            console.log('获取特征值成功', res);
+            
+            // 启用特征值通知
+            wx.notifyBLECharacteristicValueChange({
+              deviceId: deviceId,
+              serviceId: SERVICE_UUID,
+              characteristicId: CHARACTERISTIC_UUID,
+              state: true,
+              success: function(res) {
+                console.log('启用特征值通知成功', res);
+                
+                // 监听特征值变化
+                wx.onBLECharacteristicValueChange(function(result) {
+                  console.log('接收到数据', result);
+                  
+                  // 将 ArrayBuffer 转换为字符串
+                  const data = thiz.ab2str(result.value);
+                  console.log('接收到的数据', data);
+                  
+                  // 解析击中信号
+                  thiz.parseHitSignal(data, side);
+                });
+              },
+              fail: function(err) {
+                console.log('启用特征值通知失败', err);
+              }
+            });
+          },
+          fail: function(err) {
+            console.log('获取特征值失败', err);
+          }
+        });
+      },
+      fail: function(err) {
+        console.log('获取服务失败', err);
+      }
+    });
+  },
+  
+  // ArrayBuffer 转字符串
+  ab2str(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let result = '';
+    for (let i = 0; i < bytes.length; i++) {
+      result += String.fromCharCode(bytes[i]);
+    }
+    return result;
+  },
+  
+  // 解析击中信号
+  parseHitSignal(data, side) {
+    console.log(`解析来自${side}方的击中信号:`, data);
+    
+    // 检查数据格式 "time:108830|RED:2"
+    const regex = /time:(\d+)\|(\w+):(\d+)/;
+    const match = data.match(regex);
+    
+    if (match) {
+      const time = match[1];
+      const color = match[2];
+      const score = parseInt(match[3]);
+      
+      console.log(`时间: ${time}, 颜色: ${color}, 分数: ${score}`);
+      
+      // 添加到击中信号记录
+      const newHitSignal = {
+        time: time,
+        color: color,
+        score: score,
+        side: side,
+        timestamp: Date.now()
+      };
+      
+      const currentSignals = this.data.hitSignals;
+      currentSignals.push(newHitSignal);
+      
+      this.setData({
+        hitSignals: currentSignals
+      });
+      
+      console.log('当前击中信号记录:', this.data.hitSignals);
+      
+      // 根据击中信号更新分数
+      if (side === 'red' && color === 'RED') {
+        // 红方击中有效，增加分数
+        this.setData({
+          redScore: this.data.redScore + score
+        });
+      } else if (side === 'green' && color === 'GREEN') {
+        // 绿方击中有效，增加分数
+        this.setData({
+          greenScore: this.data.greenScore + score
+        });
+      }
+    } else {
+      console.log('数据格式不匹配');
+    }
+  },
+  
   // 弹出绿方图标确认窗口
   showGreenIconModal() {
     wx.showModal({

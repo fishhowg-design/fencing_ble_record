@@ -697,3 +697,11 @@
 }
 .container343176 {
 }
+
+.red-connected {
+  background-color: red;
+}
+
+.green-connected {
+  background-color: green;
+}

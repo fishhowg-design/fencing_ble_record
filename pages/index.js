@@ -2,7 +2,7 @@ Page({
   data: {
     // 比赛状态
     redScore: 0,
-    blueScore: 0,
+    greenScore: 0,
     timeLeft: 180, // 3分钟 = 180秒
     timeLeftDisplay: '03:00',
     isTimerRunning: false,
@@ -11,7 +11,7 @@ Page({
     // 比赛模式和阶段
     gameMode: '10_points', // '10_points' 或 '3_minutes'
     gamePhase: 'P1', // 'P1', 'P2', 'P3' 或 'P1/2'
-    hasPriority: null, // null, 'red', 'blue'
+    hasPriority: null, // null, 'red', 'green'
     
     // 处罚系统
     redCards: {
@@ -19,11 +19,15 @@ Page({
       red: 0,
       black: 0
     },
-    blueCards: {
+    greenCards: {
       yellow: 0,
       red: 0,
       black: 0
-    }
+    },
+    
+    // 蓝牙连接状态
+    redDeviceConnected: false,
+    greenDeviceConnected: false
   },
   
   onLoad(option) {
@@ -77,7 +81,7 @@ Page({
       if (newTime <= 0) {
         this.pauseTimer();
         // 比赛结束逻辑
-        if (this.data.redScore !== this.data.blueScore) {
+        if (this.data.redScore !== this.data.greenScore) {
           // 如果分数不同，比赛结束
           wx.showToast({
             title: '比赛结束',
@@ -131,28 +135,28 @@ Page({
     }
   },
   
-  // 蓝方加分
-  blueScoreAdd() {
-    const newScore = this.data.blueScore + 1;
+  // 绿方加分
+  greenScoreAdd() {
+    const newScore = this.data.greenScore + 1;
     this.setData({
-      blueScore: newScore
+      greenScore: newScore
     });
     
     // 检查是否达到胜利分数
     if (this.data.gameMode === '10_points' && newScore >= 10) {
       this.pauseTimer();
       wx.showToast({
-        title: '蓝方获胜',
+        title: '绿方获胜',
         icon: 'none'
       });
     }
   },
   
-  // 蓝方减分
-  blueScoreLose() {
-    if (this.data.blueScore > 0) {
+  // 绿方减分
+  greenScoreLose() {
+    if (this.data.greenScore > 0) {
       this.setData({
-        blueScore: this.data.blueScore - 1
+        greenScore: this.data.greenScore - 1
       });
     }
   },
@@ -196,9 +200,9 @@ Page({
         'redCards.yellow': newYc
       });
     } else {
-      const newYc = this.data.blueCards.yellow + 1;
+      const newYc = this.data.greenCards.yellow + 1;
       this.setData({
-        'blueCards.yellow': newYc
+        'greenCards.yellow': newYc
       });
     }
   },
@@ -212,9 +216,9 @@ Page({
         'redCards.red': newRc
       });
     } else {
-      const newRc = this.data.blueCards.red + 1;
+      const newRc = this.data.greenCards.red + 1;
       this.setData({
-        'blueCards.red': newRc
+        'greenCards.red': newRc
       });
     }
   },
@@ -228,9 +232,9 @@ Page({
         'redCards.black': newBc
       });
     } else {
-      const newBc = this.data.blueCards.black + 1;
+      const newBc = this.data.greenCards.black + 1;
       this.setData({
-        'blueCards.black': newBc
+        'greenCards.black': newBc
       });
     }
   },
@@ -241,7 +245,7 @@ Page({
     
     this.setData({
       redScore: 0,
-      blueScore: 0,
+      greenScore: 0,
       timeLeft: 180,
       timeLeftDisplay: '03:00',
       hasPriority: null,
@@ -250,7 +254,7 @@ Page({
         red: 0,
         black: 0
       },
-      blueCards: {
+      greenCards: {
         yellow: 0,
         red: 0,
         black: 0
@@ -286,7 +290,7 @@ Page({
     if (this.data.hasPriority === null) {
       newPriority = 'red';
     } else if (this.data.hasPriority === 'red') {
-      newPriority = 'blue';
+      newPriority = 'green';
     }
     
     this.setData({
@@ -303,7 +307,7 @@ Page({
   showRedIconModal() {
     wx.showModal({
       title: '确认操作',
-      content: '您点击了红方图标，将搜索蓝牙设备fencingj_red',
+      content: '您点击了红方图标，将搜索蓝牙设备Fencing_Sword_Red',
       confirmText: '确认',
       cancelText: '取消',
       success: (res) => {
@@ -327,6 +331,10 @@ Page({
       success: (res) => {
         if (res.confirm) {
           console.log('用户点击了确认');
+          // 直接切换颜色，不需要等待连接
+          this.setData({
+            greenDeviceConnected: !this.data.greenDeviceConnected
+          });
           this.connectToGreenDevice();
         } else if (res.cancel) {
           console.log('用户点击了取消');
@@ -337,7 +345,7 @@ Page({
 
   // 连接到红方蓝牙设备
   connectToRedDevice() {
-    this.startBluetoothDeviceSearch('fencingj_red', 'red');
+    this.startBluetoothDeviceSearch('Fencing_Sword_Red', 'red');
   },
 
   // 连接到绿方蓝牙设备

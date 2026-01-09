@@ -7,6 +7,8 @@ Page({
     timeLeftDisplay: '03:00',
     isTimerRunning: false,
     timerInterval: null,
+    lastHitTimestamp: null,  // 新增：记录最近一次击中的时间戳
+    lastHitSide: null,       // 新增：记录最近一次击中的方
     
     // 比赛模式和阶段
     gameMode: '10_points', // '10_points' 或 '3_minutes'
@@ -253,6 +255,8 @@ Page({
       timeLeft: 180,
       timeLeftDisplay: '03:00',
       hasPriority: null,
+      lastHitTimestamp: null,  // 新增：重置互中检测时间戳
+      lastHitSide: null,       // 新增：重置互中检测方
       redCards: {
         yellow: 0,
         red: 0,
@@ -497,14 +501,13 @@ Page({
     if (match) {
       const time = match[1];
       const color = match[2];
-      const score = parseInt(match[3]);
       
-      console.log(`时间: ${time}, 颜色: ${color}, 分数: ${score}`);
+      console.log(`时间: ${time}, 颜色: ${color}`);
       
       // 显示解析结果弹窗
       wx.showModal({
         title: '击中信号',
-        content: `时间: ${time}\n颜色: ${color}\n分数: ${score}\n来自: ${side}方`,
+        content: `时间: ${time}\n颜色: ${color}\n来自: ${side}方`,
         showCancel: false,
         confirmText: '确定'
       });
@@ -513,7 +516,7 @@ Page({
       const newHitSignal = {
         time: time,
         color: color,
-        score: score,
+        score: 1,  // 固定为1分，不再使用传入的分数
         side: side,
         timestamp: Date.now()
       };
@@ -527,17 +530,76 @@ Page({
       
       console.log('当前击中信号记录:', this.data.hitSignals);
       
-      // 根据击中信号更新分数
-      if (side === 'red' && color === 'RED') {
-        // 红方击中有效，增加分数
+      // 获取当前时间戳
+      const currentTimestamp = Date.now();
+      
+      // 判断是否为互中 - 新增逻辑
+      let isDoubleTouch = false;
+      if (this.data.lastHitTimestamp && 
+          this.data.lastHitSide && 
+          this.data.lastHitSide !== side &&  // 确保是不同方的击中
+          (currentTimestamp - this.data.lastHitTimestamp) <= 50) {  // 50毫秒内视为互中
+        isDoubleTouch = true;
+      }
+      
+      // 更新最后击中时间戳和击中方
+      this.setData({
+        lastHitTimestamp: currentTimestamp,
+        lastHitSide: side
+      });
+      
+      // 根据击中逻辑更新分数 - 重构逻辑
+      if (isDoubleTouch) {
+        // 互中，双方都加分
         this.setData({
-          redScore: this.data.redScore + score
+          redScore: this.data.redScore + 1,
+          greenScore: this.data.greenScore + 1
         });
-      } else if (side === 'green' && color === 'GREEN') {
-        // 绿方击中有效，增加分数
-        this.setData({
-          greenScore: this.data.greenScore + score
+        
+        wx.showToast({
+          title: '双方互中，各加1分',
+          icon: 'none'
         });
+      } else {
+        // 单方击中
+        if (side === 'red' && color === 'RED') {
+          // 红方击中绿方，红方得分
+          this.setData({
+            redScore: this.data.redScore + 1
+          });
+          
+          wx.showToast({
+            title: '红方得分',
+            icon: 'none'
+          });
+        } else if (side === 'green' && color === 'GREEN') {
+          // 绿方击中红方，绿方得分
+          this.setData({
+            greenScore: this.data.greenScore + 1
+          });
+          
+          wx.showToast({
+            title: '绿方得分',
+            icon: 'none'
+          });
+        }
+      }
+      
+      // 检查是否达到胜利分数（如果是10分制）
+      if (this.data.gameMode === '10_points') {
+        if (this.data.redScore >= 10) {
+          this.pauseTimer();
+          wx.showToast({
+            title: '红方获胜',
+            icon: 'none'
+          });
+        } else if (this.data.greenScore >= 10) {
+          this.pauseTimer();
+          wx.showToast({
+            title: '绿方获胜',
+            icon: 'none'
+          });
+        }
       }
     } else {
       console.log('数据格式不匹配');

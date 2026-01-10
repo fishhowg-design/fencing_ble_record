@@ -342,7 +342,7 @@ Page({
       success: (res) => {
         if (res.confirm) {
           console.log('用户点击了确认');
-          this.searchAndConnectToDevice('fencing_sword_red', 'red');
+          this.searchAndConnectToDevice('epee_red', 'red');
         } else if (res.cancel) {
           console.log('用户点击了取消');
         }
@@ -505,12 +505,12 @@ Page({
       console.log(`时间: ${time}, 颜色: ${color}`);
       
       // 显示解析结果弹窗
-      wx.showModal({
-        title: '击中信号',
-        content: `时间: ${time}\n颜色: ${color}\n来自: ${side}方`,
-        showCancel: false,
-        confirmText: '确定'
-      });
+      //wx.showModal({
+      //  title: '击中信号',
+      //  content: `时间: ${time}\n颜色: ${color}\n来自: ${side}方`,
+      //  showCancel: false,
+      //  confirmText: '确定'
+     // });
       
       // 添加到击中信号记录
       const newHitSignal = {

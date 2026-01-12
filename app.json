@@ -1,9 +1,16 @@
 {
 	"pages": ["pages/index", "pages/webview"],
-
+  "permission": {
+    "scope.bluetooth": {
+      "desc": "需要蓝牙权限连接击剑计分设备，实时记录击中分数"
+    }
+  },
 	"window": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "fencing_code",
 		"navigationBarBackgroundColor": "#07c160"
 	}
+
+  
+
 }

@@ -655,12 +655,21 @@
 .f_red_ico {
 	font-size: 64rpx;
 }
+
+/* 红方设备连接状态样式 */
+.f_red_ico.red-connected {
+  background-color: #ff1100; /* 红色背景 */
+  border-radius: 50%; /* 圆形背景 */
+  padding: 10rpx; /* 内边距使图标居中 */
+}
+
 .flex29-clz {
 	flex-shrink: 0;
 	width: 150rpx !important;
 	position: absolute;
 	right: 0rpx;
 }
+
 .flex30-clz {
 	flex-shrink: 0;
 	top: 10rpx;
@@ -671,6 +680,7 @@
 	right: 10rpx;
 	height: 100rpx !important;
 }
+
 .flex31-clz {
 	flex-shrink: 0;
 	top: 0rpx;
@@ -678,6 +688,7 @@
 	position: absolute;
 	right: 0rpx;
 }
+
 .f_green_ico-clz {
 	flex-shrink: 0;
 	top: 0rpx;
@@ -685,9 +696,18 @@
 	position: absolute;
 	right: 0rpx;
 }
+
 .f_green_ico {
 	font-size: 64rpx;
 }
+
+/* 绿方设备连接状态样式 */
+.f_green_ico.green-connected {
+  background-color: #052a16; /* 深绿色背景 */
+  border-radius: 50%; /* 圆形背景 */
+  padding: 10rpx; /* 内边距使图标居中 */
+}
+
 .flex32-clz {
 	flex-shrink: 0;
 	top: 0rpx;

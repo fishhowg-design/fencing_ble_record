@@ -336,7 +336,7 @@ Page({
   showRedIconModal() {
     wx.showModal({
       title: '确认操作',
-      content: '是否连接红方蓝牙设备？',
+      content: '是否连接【红方】蓝牙设备？',
       confirmText: '确认',
       cancelText: '取消',
       success: (res) => {
@@ -364,52 +364,63 @@ Page({
           const devices = res.devices;
           for (let i = 0; i < devices.length; i++) {
             const device = devices[i];
-            if (device.name === deviceName || device.localName === deviceName) {
+            if ((device.name === deviceName || device.localName === deviceName)) {
               console.log(`找到设备 ${deviceName}:`, device);
               
-              // 停止搜索
-              wx.stopBluetoothDevicesDiscovery({
-                complete: function() {
-                  console.log('停止搜索');
-                  
-                  // 连接设备
-                  wx.createBLEConnection({
-                    deviceId: device.deviceId,
-                    success: function(res) {
-                      console.log(`${deviceName} 连接成功`, res);
-                      
-                      // 更新连接状态
-                      if (side === 'red') {
-                        thiz.setData({
-                          redDeviceConnected: true
-                        });
+              // 检查设备是否已经被连接，如果没有则连接
+              if (!thiz.isConnectedToDevice(device.deviceId)) {
+                // 停止搜索
+                wx.stopBluetoothDevicesDiscovery({
+                  complete: function() {
+                    console.log('停止搜索');
+                    
+                    // 连接设备
+                    wx.createBLEConnection({
+                      deviceId: device.deviceId,
+                      timeout:1000,
+                      autoConnect:true,
+                      success: function(res) {
+                        console.log(`${deviceName} 连接成功`, res);
                         
-                        // 连接成功后，初始化服务和特征值
-                        thiz.initBLEService(device.deviceId, side);
-                      } else if (side === 'green') {
-                        thiz.setData({
-                          greenDeviceConnected: true
-                        });
+                        // 更新连接状态
+                        if (side === 'red') {
+                          thiz.setData({
+                            redDeviceConnected: true
+                          });
+                          
+                          // 存储红方设备ID
+                          thiz.redDeviceId = device.deviceId;
+                          
+                          // 连接成功后，初始化服务和特征值
+                          thiz.initBLEService(device.deviceId, side);
+                        } else if (side === 'green') {
+                          thiz.setData({
+                            greenDeviceConnected: true
+                          });
+                          
+                          // 存储绿方设备ID
+                          thiz.greenDeviceId = device.deviceId;
+                          
+                          // 连接成功后，初始化服务和特征值
+                          thiz.initBLEService(device.deviceId, side);
+                        }
                         
-                        // 连接成功后，初始化服务和特征值
-                        thiz.initBLEService(device.deviceId, side);
+                        wx.showToast({
+                          title: `${deviceName} 连接成功`,
+                          icon: 'success'
+                        });
+                      },
+                      fail: function(err) {
+                        console.log(`${deviceName} 连接失败`, err);
+                        wx.showToast({
+                          title: `${deviceName} 连接失败`,
+                          icon: 'error'
+                        });
                       }
-                      
-                      wx.showToast({
-                        title: `${deviceName} 连接成功`,
-                        icon: 'success'
-                      });
-                    },
-                    fail: function(err) {
-                      console.log(`${deviceName} 连接失败`, err);
-                      wx.showToast({
-                        title: `${deviceName} 连接失败`,
-                        icon: 'error'
-                      });
-                    }
-                  });
-                }
-              });
+                    });
+                  }
+                });
+              }
             }
           }
         });
@@ -420,6 +431,56 @@ Page({
           title: '搜索蓝牙设备失败',
           icon: 'error'
         });
+      }
+    });
+  },
+
+  // 检查设备是否已经连接
+  isConnectedToDevice(deviceId) {
+    const thiz = this;
+    return (thiz.redDeviceId && thiz.redDeviceId === deviceId) || 
+           (thiz.greenDeviceId && thiz.greenDeviceId === deviceId);
+  },
+  
+  // 断开蓝牙连接
+  disconnectBLE(deviceId, side) {
+    const thiz = this;
+    wx.closeBLEConnection({
+      deviceId: deviceId,
+      success: function(res) {
+        console.log(`${side}设备断开成功`, res);
+        if (side === 'red') {
+          thiz.setData({
+            redDeviceConnected: false
+          });
+          thiz.redDeviceId = null; // 清除设备ID
+        } else if (side === 'green') {
+          thiz.setData({
+            greenDeviceConnected: false
+          });
+          thiz.greenDeviceId = null; // 清除设备ID
+        }
+      },
+      fail: function(err) {
+        console.log(`${side}设备断开失败`, err);
+      }
+    });
+  },
+  
+  // 获取所有已连接的BLE设备
+  getConnectedBLEDevices() {
+    const thiz = this;
+    wx.getConnectedBluetoothDevices({
+      services: [], // 可以指定特定的服务UUID
+      success: function(res) {
+        console.log('已连接的BLE设备:', res);
+        // 遍历已连接的设备，如果发现未在我们的状态中的设备，则断开连接
+        res.devices.forEach(device => {
+          // 如果不是我们要连接的两个设备之一，则考虑断开
+        });
+      },
+      fail: function(err) {
+        console.log('获取已连接设备失败', err);
       }
     });
   },
@@ -503,14 +564,6 @@ Page({
       const color = match[2];
       
       console.log(`时间: ${time}, 颜色: ${color}`);
-      
-      // 显示解析结果弹窗
-      //wx.showModal({
-      //  title: '击中信号',
-      //  content: `时间: ${time}\n颜色: ${color}\n来自: ${side}方`,
-      //  showCancel: false,
-      //  confirmText: '确定'
-     // });
       
       // 添加到击中信号记录
       const newHitSignal = {
@@ -610,13 +663,13 @@ Page({
   showGreenIconModal() {
     wx.showModal({
       title: '确认操作',
-      content: '您点击了绿方图标，将搜索蓝牙设备fencing_sword_green',
+      content: '是否连接【绿方】蓝牙设备？',
       confirmText: '确认',
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
           console.log('用户点击了确认');
-          this.searchAndConnectToDevice('fencing_sword_green', 'green');
+          this.searchAndConnectToDevice('epee_green', 'green');
         } else if (res.cancel) {
           console.log('用户点击了取消');
         }
@@ -651,5 +704,34 @@ Page({
   async setValueFunction(param) {
     let thiz = this.data;
     this.$session.setUserValue('key', 'value');
+  },
+  
+  // 页面卸载时清理资源
+  onUnload() {
+    // 断开所有蓝牙连接
+    if (this.redDeviceId) {
+      wx.closeBLEConnection({
+        deviceId: this.redDeviceId,
+        fail: function(err) {
+          console.log('断开红方设备失败', err);
+        }
+      });
+    }
+    
+    if (this.greenDeviceId) {
+      wx.closeBLEConnection({
+        deviceId: this.greenDeviceId,
+        fail: function(err) {
+          console.log('断开绿方设备失败', err);
+        }
+      });
+    }
+    
+    // 关闭蓝牙适配器
+    wx.closeBluetoothAdapter({
+      fail: function(err) {
+        console.log('关闭蓝牙适配器失败', err);
+      }
+    });
   }
 });
